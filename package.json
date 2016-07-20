@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "dependencies": {
+    "angular": "^1.5.7",
+    "angular-local-storage": "^0.2.7"
+  }
+}

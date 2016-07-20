@@ -1,0 +1,9 @@
+{
+  "name": "test",
+  "dependencies": {},
+  "globalDependencies": {
+    "angular": "registry:dt/angular#1.5.0+20160709055139",
+    "angular-local-storage": "registry:dt/angular-local-storage#0.1.5+20160602154142",
+    "jquery": "registry:dt/jquery#1.10.0+20160704162008"
+  }
+}
