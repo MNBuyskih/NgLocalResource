@@ -12,24 +12,26 @@ describe('NgLocalResource', function () {
     }));
 
     // save
-    it('should save new value', function () {
-        var newObj = {foo: 'bar'};
-        var savedObj;
-        inject(function (MyLocalResource, $rootScope) {
-            MyLocalResource
-                .save(newObj)
-                .then(function (response) {
-                    savedObj = response;
-                });
+    describe('save', function () {
+        it('should save new value', function () {
+            var newObj = {foo: 'bar'};
+            var savedObj;
+            inject(function (MyLocalResource, $rootScope) {
+                MyLocalResource
+                    .save(newObj)
+                    .then(function (response) {
+                        savedObj = response;
+                    });
 
-            $rootScope.$apply();
-            expect(savedObj.foo).toBe(newObj.foo);
-            expect(savedObj.id).not.toBeUndefined();
-        })
+                $rootScope.$apply();
+                expect(savedObj.foo).toBe(newObj.foo);
+                expect(savedObj.id).not.toBeUndefined();
+            })
+        });
     });
 
     // get
-    xdescribe('get', function () {
+    describe('get', function () {
         var newObj = {foo: 'bar'};
         var savedObj;
         beforeEach(inject(function (MyLocalResource, $rootScope) {
@@ -69,7 +71,7 @@ describe('NgLocalResource', function () {
     });
 
     // update
-    xdescribe('update', function () {
+    describe('update', function () {
         var newObj = {foo: 'bar'};
         var savedObj;
         beforeEach(inject(function (MyLocalResource, $rootScope) {
@@ -95,7 +97,7 @@ describe('NgLocalResource', function () {
     });
 
     // remove
-    xdescribe('remove', function () {
+    describe('remove', function () {
         var newObj = {foo: 'bar'};
         var savedObj;
         beforeEach(inject(function (MyLocalResource, $rootScope) {
@@ -128,7 +130,7 @@ describe('NgLocalResource', function () {
     });
 
     // query
-    xdescribe('query', function () {
+    describe('query', function () {
         beforeEach(inject(function (MyLocalResource, $rootScope) {
             [0, 1, 2, 3, 4].forEach(function (n) {
                 MyLocalResource.save({foo: 'n:' + n});

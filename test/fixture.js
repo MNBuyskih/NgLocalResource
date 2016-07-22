@@ -1,8 +1,7 @@
-var app = angular.module('MyApp', ['ng-local-resource']);
+var app = angular.module('MyApp', ['LocalResourceModule']);
 app.service('MyLocalResource', function ($localResource) {
-    return $localResource('myLocalResourceKey', {
-        prefix: 'myLocalResourcePrefix',
+    return $localResource({
+        key: 'myLocalResourcePrefix',
         pk: 'id',
-        createId: true,
     });
 });
