@@ -92,7 +92,13 @@ var NgLocalResource;
     NgLocalResource_1.NgLocalResource = NgLocalResource;
     function $localResource(localStorageService, $q) {
         return function (key, config) {
-            return new NgLocalResource(key, config, localStorageService, $q);
+            var inst = function () {
+            };
+            inst.$resource = new NgLocalResource(key, config, localStorageService, $q);
+            inst.save = function (element) {
+                return this.$resource.save(element);
+            };
+            return inst;
         };
     }
     NgLocalResource_1.$localResource = $localResource;

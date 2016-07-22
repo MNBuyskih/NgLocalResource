@@ -6,19 +6,20 @@ import IPromise = angular.IPromise;
 module NgLocalResource {
     "use strict";
 
-    abstract class NgLocalResourceModelAbstract<T> {
-        constructor(private $resource:NgLocalResource<T>) {
+    abstract class NgLocalResourceModelAbstract {
+        constructor(private $resource:NgLocalResource) {
+
         }
 
-        $save():IPromise<T> {
+        $save():IPromise<NgLocalResource> {
             return this.$resource.save(this);
         }
 
-        $update():IPromise<T> {
+        $update():IPromise<NgLocalResource> {
             return this.$resource.update(this);
         }
 
-        $remove():IPromise<T> {
+        $remove():IPromise<NgLocalResource> {
             return this.$resource.remove(this[this.$resource.config.pk]);
         }
 
@@ -29,52 +30,52 @@ module NgLocalResource {
         }
     }
 
-    export interface INgLocalResourceModel<T> {
-        $save():IPromise<T>;
-        $update():IPromise<T>;
-        $remove():IPromise<T>;
+    export interface INgLocalResourceModel {
+        $save():IPromise<INgLocalResourceModel>;
+        $update():IPromise<INgLocalResourceModel>;
+        $remove():IPromise<INgLocalResourceModel>;
     }
 
-    export interface INgLocalResource<T> {
-        get(id):IPromise<T>;
-        save(element:T):IPromise<T>;
-        update(element:T):IPromise<T>;
-        query():IPromise<T[]>;
-        remove(id):IPromise<T>;
+    export interface INgLocalResource {
+        get(id):IPromise<INgLocalResource>;
+        save(element:INgLocalResource):IPromise<INgLocalResource>;
+        update(element:INgLocalResource):IPromise<INgLocalResource>;
+        query():IPromise<INgLocalResource[]>;
+        remove(id):IPromise<INgLocalResource>;
     }
 
-    export class NgLocalResourceModel<T> extends NgLocalResourceModelAbstract<T> implements INgLocalResourceModel<T> {
+    export class NgLocalResourceModel extends NgLocalResourceModelAbstract implements INgLocalResourceModel {
     }
-    export class NgLocalResource<T> implements INgLocalResource<T> {
+    export class NgLocalResource implements INgLocalResource {
         constructor(public key:string, public config:INgLocalResourceConfig, private service:ILocalStorageService, private $q:IQService) {
         }
 
-        get(id):IPromise<T> {
+        get(id):IPromise<NgLocalResource> {
             let value = this._get(id);
             return this.$q.resolve(value);
         }
 
-        save(element:T):IPromise<T> {
+        save(element:NgLocalResource):IPromise<NgLocalResource> {
             if (element[this.config.pk] === undefined && this.config.createId) element[this.config.pk] = this.createId();
 
             this._set(this.createKey(element[this.config.pk]), element);
             return this.get(element[this.config.pk]);
         }
 
-        update(element:T):IPromise<T> {
+        update(element:NgLocalResource):IPromise<NgLocalResource> {
             this._set(this.createKey(element[this.config.pk]), element);
             return this.get(element[this.config.pk]);
         }
 
-        query():IPromise<T[]> {
+        query():IPromise<NgLocalResource[]> {
             var keyBegin = this.createKey('');
             let value = this.service.keys()
                 .filter((key) => key.indexOf(keyBegin) > -1)
                 .map((key) => this._get(key.replace(keyBegin, '')));
-            return this._promise<T[]>(value);
+            return this._promise<NgLocalResource[]>(value);
         }
 
-        remove(id):IPromise<T> {
+        remove(id):IPromise<NgLocalResource> {
             var value = this.service.remove(this.createKey(id));
             return this._promise(value);
         }
@@ -89,7 +90,7 @@ module NgLocalResource {
             return value;
         }
 
-        private _set(key:string, element:T) {
+        private _set(key:string, element:NgLocalResource) {
             var clone = {};
             angular.copy(element, clone);
             clone['$resource'] = undefined;
@@ -111,9 +112,22 @@ module NgLocalResource {
         createId:boolean;
     }
 
-    export function $localResource<T>(localStorageService:ILocalStorageService, $q:IQService):Function {
+    export interface INgLocalResourceConstructor {
+        ();
+        save():IPromise;
+        $resource:INgLocalResource;
+    }
+
+    export function $localResource(localStorageService:ILocalStorageService, $q:IQService):Function {
         return function (key:string, config:INgLocalResourceConfig) {
-            return new NgLocalResource<T>(key, config, localStorageService, $q);
+            let inst = <INgLocalResourceConstructor>function () {
+            };
+            inst.$resource = new NgLocalResource(key, config, localStorageService, $q);
+            inst.save = function (element):IPromise {
+                return this.$resource.save(element);
+            };
+
+            return inst;
         }
     }
 

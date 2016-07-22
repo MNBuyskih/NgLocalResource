@@ -1,7 +1,6 @@
 describe('NgLocalResource', function () {
     beforeEach(module('MyApp'));
     beforeEach(function () {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
         jasmine.addCustomEqualityTester(angular.equals);
     });
     beforeEach(inject(function (localStorageService) {
@@ -30,7 +29,7 @@ describe('NgLocalResource', function () {
     });
 
     // get
-    describe('get', function () {
+    xdescribe('get', function () {
         var newObj = {foo: 'bar'};
         var savedObj;
         beforeEach(inject(function (MyLocalResource, $rootScope) {
@@ -70,7 +69,7 @@ describe('NgLocalResource', function () {
     });
 
     // update
-    describe('update', function () {
+    xdescribe('update', function () {
         var newObj = {foo: 'bar'};
         var savedObj;
         beforeEach(inject(function (MyLocalResource, $rootScope) {
@@ -96,7 +95,7 @@ describe('NgLocalResource', function () {
     });
 
     // remove
-    describe('remove', function () {
+    xdescribe('remove', function () {
         var newObj = {foo: 'bar'};
         var savedObj;
         beforeEach(inject(function (MyLocalResource, $rootScope) {
@@ -129,7 +128,7 @@ describe('NgLocalResource', function () {
     });
 
     // query
-    describe('query', function () {
+    xdescribe('query', function () {
         beforeEach(inject(function (MyLocalResource, $rootScope) {
             [0, 1, 2, 3, 4].forEach(function (n) {
                 MyLocalResource.save({foo: 'n:' + n});
@@ -150,6 +149,22 @@ describe('NgLocalResource', function () {
             expect(result.length).toBe(5);
             expect(result[0].foo).toBe('n:0');
             expect(result[4].foo).toBe('n:4');
+        }));
+    });
+});
+
+xdescribe('NgLocalResourceModel', function () {
+    beforeEach(module('MyApp'));
+    beforeEach(function () {
+        jasmine.addCustomEqualityTester(angular.equals);
+    });
+    beforeEach(inject(function (localStorageService) {
+        localStorageService.clearAll();
+    }));
+
+    describe('$save', function () {
+        it('should create new instance', inject(function ($resource, $rootScope) {
+            var newObj = new MyLocalResource();
         }));
     });
 });
