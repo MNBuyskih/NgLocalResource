@@ -2,8 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "sourceMap": true,
-    "outFile": "dest/index.js",
-    "module": "system"
+    "outFile": "dest/index.js"
   },
   "exclude": [
     "node_modules"
