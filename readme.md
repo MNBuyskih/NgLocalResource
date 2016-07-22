@@ -1,6 +1,6 @@
 #Usage 
 
-```
+```html
 <script src="angular/angular.js"></script>
 <script src="angular-local-storage/dist/angular-local-storage.min.js"></script>
 <script src="ng-local-resource/dest/index.js"></script>
