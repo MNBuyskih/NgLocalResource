@@ -1,14 +1,38 @@
 {
-  "private": true,
+  "name": "ng-local-resource",
+  "version": "1.0.0",
+  "description": "Angular module for use local storage as remote resource",
+  "main": "dest/index.js",
+  "directories": {
+    "test": "test"
+  },
   "dependencies": {
-    "angular": "^1.5.7",
-    "angular-local-storage": "^0.2.7"
+    "angular-local-storage": "^0.2.7",
+    "angular": "^1.5.7"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "jasmine": "^2.4.1",
-    "karma": "^1.1.1",
+    "karma-jasmine": "^1.0.2",
     "karma-chrome-launcher": "^1.0.1",
-    "karma-jasmine": "^1.0.2"
-  }
+    "karma": "^1.1.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MNBuyskih/NgLocalResource.git"
+  },
+  "keywords": [
+    "angular",
+    "local storage",
+    "resource"
+  ],
+  "author": "MNB",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MNBuyskih/NgLocalResource/issues"
+  },
+  "homepage": "https://github.com/MNBuyskih/NgLocalResource#readme"
 }
