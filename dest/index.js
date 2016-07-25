@@ -93,12 +93,13 @@ var LocalResource;
             }
         };
     }
-    angular
-        .module('LocalResourceModule', ['LocalStorageModule'])
-        .service('$localResource', function (localStorageService, $q) {
-        return createService(localStorageService, $q);
-    });
+    LocalResource.createService = createService;
 })(LocalResource || (LocalResource = {}));
+angular
+    .module('LocalResourceModule', ['LocalStorageModule'])
+    .service('$localResource', function (localStorageService, $q) {
+    return LocalResource.createService(localStorageService, $q);
+});
 var app = angular.module('MyApp', ['LocalResourceModule']);
 app.service('MyLocal', function ($localResource) {
     return $localResource({

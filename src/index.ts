@@ -65,7 +65,7 @@ module LocalResource {
         (config:ILocalResourceConfig):ILocalStorageService;
     }
 
-    function createService(localStorage:ILocalStorageService, $q:IQService):Function {
+    export function createService(localStorage:ILocalStorageService, $q:IQService):Function {
         return function <ILocalStorageResourceService>(config:ILocalResourceConfig) {
             // Todo: Ugly hard code.
             // Hide property `config` under function instance.
@@ -122,10 +122,10 @@ module LocalResource {
             }
         };
     }
-
-    angular
-        .module('LocalResourceModule', ['LocalStorageModule'])
-        .service('$localResource', function (localStorageService:ILocalStorageService, $q:IQService) {
-            return createService(localStorageService, $q);
-        });
 }
+
+angular
+    .module('LocalResourceModule', ['LocalStorageModule'])
+    .service('$localResource', function (localStorageService:ILocalStorageService, $q:IQService) {
+        return LocalResource.createService(localStorageService, $q);
+    });
