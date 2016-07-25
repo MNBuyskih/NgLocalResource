@@ -155,7 +155,7 @@ describe('NgLocalResource', function () {
     });
 });
 
-xdescribe('NgLocalResourceModel', function () {
+describe('NgLocalResourceModel', function () {
     beforeEach(module('MyApp'));
     beforeEach(function () {
         jasmine.addCustomEqualityTester(angular.equals);
@@ -165,8 +165,65 @@ xdescribe('NgLocalResourceModel', function () {
     }));
 
     describe('$save', function () {
-        it('should create new instance', inject(function ($resource, $rootScope) {
+        it('should create new instance', inject(function (MyLocalResource, $rootScope) {
             var newObj = new MyLocalResource();
+            var sm = LocalResource.ServiceModel;
+            expect(newObj instanceof sm).toBe(true);
+        }));
+
+        it('should save new instance', inject(function (MyLocalResource, $rootScope) {
+            var response;
+            var newObj = new MyLocalResource();
+            newObj.foo = 'bar';
+            newObj.$save().then(function (res) {
+                response = res;
+            });
+            $rootScope.$apply();
+            expect(response.foo).toBe('bar');
+            expect(response.id).not.toBeUndefined();
+        }));
+    });
+
+    describe('$update', function () {
+        it('should update existing instance', inject(function (MyLocalResource, $rootScope) {
+            var id;
+            var newObj = new MyLocalResource();
+            newObj.foo = 'bar';
+            newObj.$save().then(function (res) {
+                newObj = res;
+                id = newObj.id;
+            });
+            $rootScope.$apply();
+
+            var updated;
+            newObj.foo = 'rab';
+            newObj.$update().then(function (res) {
+                updated = res;
+            });
+
+            $rootScope.$apply();
+            expect(updated.foo).toBe(newObj.foo);
+            expect(updated.id).toBe(newObj.id);
+        }));
+    });
+
+    describe('$remove', function () {
+        it('should remove existing instance', inject(function (MyLocalResource, $rootScope) {
+            var newObj = new MyLocalResource();
+            newObj.$save().then(function (res) {
+                newObj = res;
+            });
+            $rootScope.$apply();
+
+            newObj.$remove();
+            $rootScope.$apply();
+
+            var found;
+            MyLocalResource.get(newObj.id).then(function (ret) {
+                found = ret;
+            });
+            $rootScope.$apply();
+            expect(found).toBe(null);
         }));
     });
 });

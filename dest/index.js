@@ -1,8 +1,39 @@
 var LocalResource;
 (function (LocalResource) {
+    var ServiceModel = (function () {
+        function ServiceModel($service, $config) {
+            this.$service = $service;
+            this.$config = $config;
+        }
+        ServiceModel.prototype.$save = function () {
+            var _this = this;
+            return this.$service
+                .save(this)
+                .then(function (response) {
+                angular.extend(_this, response);
+                return _this;
+            });
+        };
+        ServiceModel.prototype.$update = function () {
+            var _this = this;
+            return this.$service
+                .update(this)
+                .then(function (response) {
+                angular.extend(_this, response);
+                return _this;
+            });
+        };
+        ServiceModel.prototype.$remove = function () {
+            return this.$service.remove(this[this.$config.pk]);
+        };
+        return ServiceModel;
+    }());
+    LocalResource.ServiceModel = ServiceModel;
     function createService(localStorage, $q) {
         return function (config) {
-            var service = function () {
+            var service;
+            service = function () {
+                return new ServiceModel(service, config);
             };
             service.save = function (model) {
                 if (model[config.pk] === undefined)

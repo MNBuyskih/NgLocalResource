@@ -8,13 +8,15 @@ module LocalResource {
         ();
         save(model:IServiceModel):IPromise<IServiceModel>;
         update(model:IServiceModel):IPromise<IServiceModel>;
-        remove(id:string):IPromise<IServiceModel>;
+        remove(id:string):IPromise<{}>;
         get(id:string):IPromise<IServiceModel>;
         query():IPromise<IServiceModel[]>;
     }
 
     interface IServiceModel {
-
+        $save():IPromise<IServiceModel>;
+        $update():IPromise<IServiceModel>;
+        $remove():IPromise<{}>;
     }
 
     interface ILocalResourceConfig {
@@ -22,9 +24,38 @@ module LocalResource {
         key:string;
     }
 
+    export class ServiceModel implements IServiceModel {
+        constructor(private $service:IServiceConstructor, private $config:ILocalResourceConfig) {
+        }
+
+        $save():IPromise<IServiceModel> {
+            return this.$service
+                .save(this)
+                .then((response) => {
+                    angular.extend(this, response);
+                    return this;
+                });
+        }
+
+        $update():IPromise<IServiceModel> {
+            return this.$service
+                .update(this)
+                .then((response) => {
+                    angular.extend(this, response);
+                    return this;
+                });
+        }
+
+        $remove():IPromise<{}> {
+            return this.$service.remove(this[this.$config.pk]);
+        }
+    }
+
     function createService(localStorage:ILocalStorageService, $q:IQService):Function {
         return function (config:ILocalResourceConfig) {
-            let service = <IServiceConstructor>function () {
+            let service;
+            service = <IServiceConstructor>function () {
+                return new ServiceModel(service, config);
             };
             service.save = function (model:IServiceModel):IPromise<IServiceModel> {
                 if (model[config.pk] === undefined) model[config.pk] = _createPk();
