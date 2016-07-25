@@ -13,16 +13,19 @@ module LocalResource {
         query():IPromise<IServiceModel[]>;
     }
 
-    interface IServiceModel {
+    export interface IServiceModel {
         $save():IPromise<IServiceModel>;
         $update():IPromise<IServiceModel>;
         $remove():IPromise<{}>;
     }
 
     interface ILocalResourceConfig {
-        ();
         pk:string;
         key:string;
+    }
+
+    interface ILocalResourceConfigExtended extends ILocalResourceConfig {
+        ();
     }
 
     class ServiceModelSuper {
@@ -58,9 +61,15 @@ module LocalResource {
         }
     }
 
+    export interface ILocalStorageResourceService {
+        (config:ILocalResourceConfig):ILocalStorageService;
+    }
+
     function createService(localStorage:ILocalStorageService, $q:IQService):Function {
-        return function (config:ILocalResourceConfig) {
-            let _config = <ILocalResourceConfig> function () {
+        return function <ILocalStorageResourceService>(config:ILocalResourceConfig) {
+            // Todo: Ugly hard code.
+            // Hide property `config` under function instance.
+            let _config = <ILocalResourceConfigExtended> function () {
             };
             _config.key = config.key;
             _config.pk = config.pk;

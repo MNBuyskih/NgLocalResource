@@ -43,6 +43,8 @@ var LocalResource;
     LocalResource.ServiceModel = ServiceModel;
     function createService(localStorage, $q) {
         return function (config) {
+            // Todo: Ugly hard code.
+            // Hide property `config` under function instance.
             var _config = function () {
             };
             _config.key = config.key;
@@ -97,4 +99,21 @@ var LocalResource;
         return createService(localStorageService, $q);
     });
 })(LocalResource || (LocalResource = {}));
+var app = angular.module('MyApp', ['LocalResourceModule']);
+app.service('MyLocal', function ($localResource) {
+    return $localResource({
+        pk: 'id',
+        key: 'my'
+    });
+});
+app.controller('MyController', MyController);
+var MyController = (function () {
+    function MyController(MyLocal) {
+        this.MyLocal = MyLocal;
+        var my = new MyLocal();
+        my.foo = 'bar';
+        my.$save();
+    }
+    return MyController;
+}());
 //# sourceMappingURL=index.js.map
