@@ -1,9 +1,21 @@
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var LocalResource;
 (function (LocalResource) {
-    var ServiceModel = (function () {
-        function ServiceModel($service, $config) {
+    var ServiceModelSuper = (function () {
+        function ServiceModelSuper($service, $config) {
             this.$service = $service;
             this.$config = $config;
+        }
+        return ServiceModelSuper;
+    }());
+    var ServiceModel = (function (_super) {
+        __extends(ServiceModel, _super);
+        function ServiceModel($service, $config) {
+            _super.call(this, $service, $config);
         }
         ServiceModel.prototype.$save = function () {
             var _this = this;
@@ -27,10 +39,15 @@ var LocalResource;
             return this.$service.remove(this[this.$config.pk]);
         };
         return ServiceModel;
-    }());
+    }(ServiceModelSuper));
     LocalResource.ServiceModel = ServiceModel;
     function createService(localStorage, $q) {
         return function (config) {
+            var _config = function () {
+            };
+            _config.key = config.key;
+            _config.pk = config.pk;
+            config = _config;
             var service;
             service = function () {
                 return new ServiceModel(service, config);

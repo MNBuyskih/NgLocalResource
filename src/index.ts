@@ -20,12 +20,19 @@ module LocalResource {
     }
 
     interface ILocalResourceConfig {
+        ();
         pk:string;
         key:string;
     }
 
-    export class ServiceModel implements IServiceModel {
-        constructor(private $service:IServiceConstructor, private $config:ILocalResourceConfig) {
+    class ServiceModelSuper {
+        constructor(protected $service:IServiceConstructor, protected $config:ILocalResourceConfig) {
+        }
+    }
+
+    export class ServiceModel extends ServiceModelSuper implements IServiceModel {
+        constructor($service:IServiceConstructor, $config:ILocalResourceConfig) {
+            super($service, $config);
         }
 
         $save():IPromise<IServiceModel> {
@@ -53,6 +60,12 @@ module LocalResource {
 
     function createService(localStorage:ILocalStorageService, $q:IQService):Function {
         return function (config:ILocalResourceConfig) {
+            let _config = <ILocalResourceConfig> function () {
+            };
+            _config.key = config.key;
+            _config.pk = config.pk;
+            config = _config;
+
             let service;
             service = <IServiceConstructor>function () {
                 return new ServiceModel(service, config);

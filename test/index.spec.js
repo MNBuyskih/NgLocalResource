@@ -226,4 +226,13 @@ describe('NgLocalResourceModel', function () {
             expect(found).toBe(null);
         }));
     });
+
+    describe('$service and $config', function () {
+        it('should not exist in model directly', inject(function (MyLocalResource, $rootScope) {
+            var obj = new MyLocalResource();
+            obj.$save();
+            expect(JSON.parse(JSON.stringify(obj)).$service).toBeUndefined();
+            expect(JSON.parse(JSON.stringify(obj)).$config).toBeUndefined();
+        }));
+    });
 });
