@@ -100,21 +100,4 @@ angular
     .service('$localResource', function (localStorageService, $q) {
     return LocalResource.createService(localStorageService, $q);
 });
-var app = angular.module('MyApp', ['LocalResourceModule']);
-app.service('MyLocal', function ($localResource) {
-    return $localResource({
-        pk: 'id',
-        key: 'my'
-    });
-});
-app.controller('MyController', MyController);
-var MyController = (function () {
-    function MyController(MyLocal) {
-        this.MyLocal = MyLocal;
-        var my = new MyLocal();
-        my.foo = 'bar';
-        my.$save();
-    }
-    return MyController;
-}());
 //# sourceMappingURL=index.js.map

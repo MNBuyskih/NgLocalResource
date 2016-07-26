@@ -148,6 +148,7 @@ describe('NgLocalResource', function () {
 
             $rootScope.$apply();
             expect(Array.isArray(result)).toBe(true);
+            console.log(result);
             expect(result.length).toBe(5);
             expect(result[0].foo).toBe('n:0');
             expect(result[4].foo).toBe('n:4');

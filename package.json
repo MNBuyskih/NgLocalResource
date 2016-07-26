@@ -1,6 +1,6 @@
 {
   "name": "ng-local-resource",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Angular module for use local storage as remote resource",
   "main": "dest/index.js",
   "directories": {
@@ -13,9 +13,10 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "jasmine": "^2.4.1",
-    "karma-jasmine": "^1.0.2",
+    "karma": "^1.1.1",
     "karma-chrome-launcher": "^1.0.1",
-    "karma": "^1.1.1"
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-jasmine": "^1.0.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
