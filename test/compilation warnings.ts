@@ -1,6 +1,3 @@
-import ILocalStorageResourceService = LocalResource.ILocalStorageResourceService;
-import IServiceModel = LocalResource.IServiceModel;
-
 let app = angular.module('MyApp', ['LocalResourceModule']);
 app.service('MyLocal', ($localResource:ILocalStorageResourceService)=> {
     return $localResource({
@@ -18,7 +15,7 @@ class MyController {
     }
 }
 
-declare interface MyLocalInstance extends IServiceModel {
+declare interface MyLocalInstance extends IS {
     new ();
     foo:string;
 }

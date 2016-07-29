@@ -2,44 +2,20 @@ declare var angular:ng.IAngularStatic;
 import ILocalStorageService = angular.local.storage.ILocalStorageService;
 import IQService = angular.IQService;
 import IPromise = angular.IPromise;
+import ILocalResourceOptions = ngLocalResource.ILocalResourceOptions;
 
 module LocalResource {
-    interface IServiceConstructor {
-        ();
-        save(model:IServiceModel):IPromise<IServiceModel>;
-        update(model:IServiceModel):IPromise<IServiceModel>;
-        remove(id:string):IPromise<{}>;
-        get(id:string):IPromise<IServiceModel>;
-        query():IPromise<IServiceModel[]>;
-    }
+    import ILocalResourceService = ngLocalResource.ILocalResourceService;
+    import ILocalResourceClass = ngLocalResource.ILocalResourceClass;
+    import ILocalResource = ngLocalResource.ILocalResource;
+    import ILocalResourceArray = ngLocalResource.ILocalResourceArray;
 
-    export interface IServiceModel {
-        $save():IPromise<IServiceModel>;
-        $update():IPromise<IServiceModel>;
-        $remove():IPromise<{}>;
-    }
-
-    interface ILocalResourceConfig {
-        pk:string;
-        key:string;
-    }
-
-    interface ILocalResourceConfigExtended extends ILocalResourceConfig {
-        ();
-    }
-
-    class ServiceModelSuper {
-        constructor(protected $service:IServiceConstructor, protected $config:ILocalResourceConfig) {
-        }
-    }
-
-    export class ServiceModel extends ServiceModelSuper implements IServiceModel {
-        constructor($service:IServiceConstructor, $config:ILocalResourceConfig) {
-            super($service, $config);
+    class LocalResource<T> implements ILocalResource<T> {
+        constructor(private service:ILocalResourceClass<T>) {
         }
 
-        $save():IPromise<IServiceModel> {
-            return this.$service
+        $save():IPromise<ILocalResource<T>> {
+            return this.service
                 .save(this)
                 .then((response) => {
                     angular.extend(this, response);
@@ -47,8 +23,8 @@ module LocalResource {
                 });
         }
 
-        $update():IPromise<IServiceModel> {
-            return this.$service
+        $update():IPromise<ILocalResource<T>> {
+            return this.service
                 .update(this)
                 .then((response) => {
                     angular.extend(this, response);
@@ -56,71 +32,61 @@ module LocalResource {
                 });
         }
 
-        $remove():IPromise<{}> {
-            return this.$service.remove(this[this.$config.pk]);
+        $remove():IPromise<T> {
+            return this.service.remove(this);
+        }
+
+        $delete():IPromise<T> {
+            return this.$remove();
         }
     }
 
-    export interface ILocalStorageResourceService {
-        (config:ILocalResourceConfig):ILocalStorageService;
-    }
-
-    export function createService(localStorage:ILocalStorageService, $q:IQService):Function {
-        return function <ILocalStorageResourceService>(config:ILocalResourceConfig) {
-            // Todo: Ugly hard code.
-            // Hide property `config` under function instance.
-            let _config = <ILocalResourceConfigExtended> function () {
-            };
-            _config.key = config.key;
-            _config.pk = config.pk;
-            config = _config;
-
+    export function createService($localStorage:ILocalStorageService, $q):ILocalResourceService {
+        return function <T>(key:string, pk:string = 'id'):ILocalResourceClass<ILocalResource<T>> {
             let service;
-            service = <IServiceConstructor>function () {
-                return new ServiceModel(service, config);
+            service = <ILocalResourceClass<LocalResource<T>>>function () {
+                return new LocalResource(service);
             };
-            service.save = function (model:IServiceModel):IPromise<IServiceModel> {
-                if (model[config.pk] === undefined) model[config.pk] = _createPk();
-                _set(model[config.pk], model);
-                return this.get(model[config.pk]);
+            service.save = function (model) {
+                if (model[pk] === undefined) model[pk] = _createPk();
+                _set(model[pk], model);
+                return this.get(model[pk]);
             };
-            service.update = function (model:IServiceModel):IPromise<IServiceModel> {
-                _set(model[config.pk], model);
-                return this.get(model[config.pk]);
+            service.update = function (model:T):IPromise<T> {
+                _set(model[pk], model);
+                return this.get(model[pk]);
             };
-            service.remove = function (id:string):IPromise<{}> {
-                return $q.resolve(localStorage.remove(_createKey(id)));
+            service.remove = function (model:T):IPromise<T> {
+                return $q.resolve($localStorage.remove(_createKey(model[pk])));
             };
-            service.get = function (id:string):IPromise<IServiceModel> {
+            service.get = function (id:string):IPromise<T> {
                 return _get(id);
             };
-            service.query = function ():IPromise<IServiceModel[]> {
-                return $q.all(localStorage
+            service.query = function ():IPromise<T[]> {
+                return $q.all($localStorage
                     .keys()
-                    .filter((key) => {
-                        return key.indexOf(config.key) > -1;
-                    })
-                    .map((key) => _get(key.replace(config.key, ''))));
+                    .filter((key) => key.indexOf(key) > -1)
+                    .map((k) => _get(k.replace(key, ''))));
             };
 
-            return service;
-
-            function _get(id:string):IPromise<IServiceModel> {
-                return $q.resolve(localStorage.get(_createKey(id)));
-            }
-
             function _set(key:string, value):boolean {
-                return localStorage.set(_createKey(key), value);
+                return $localStorage.set(_createKey(key), value);
             }
 
-            function _createKey(id:string):string {
-                return `${config.key}${id}`;
+            function _get(id:string):IPromise<T> {
+                return $q.resolve($localStorage.get(_createKey(id)));
             }
 
             function _createPk():string {
-                return (localStorage.length() + 1).toString();
+                return ($localStorage.length() + 1).toString();
             }
-        };
+
+            function _createKey(id:string):string {
+                return `${key}${id}`;
+            }
+
+            return service;
+        }
     }
 }
 

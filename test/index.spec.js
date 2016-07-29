@@ -110,7 +110,7 @@ describe('NgLocalResource', function () {
         it('should remove model', inject(function (MyLocalResource, $rootScope) {
             var response;
             MyLocalResource
-                .remove(savedObj.id)
+                .remove(savedObj)
                 .then(function (res) {
                     response = res;
                 });
@@ -148,7 +148,6 @@ describe('NgLocalResource', function () {
 
             $rootScope.$apply();
             expect(Array.isArray(result)).toBe(true);
-            console.log(result);
             expect(result.length).toBe(5);
             expect(result[0].foo).toBe('n:0');
             expect(result[4].foo).toBe('n:4');
@@ -166,12 +165,6 @@ describe('NgLocalResourceModel', function () {
     }));
 
     describe('$save', function () {
-        it('should create new instance', inject(function (MyLocalResource, $rootScope) {
-            var newObj = new MyLocalResource();
-            var sm = LocalResource.ServiceModel;
-            expect(newObj instanceof sm).toBe(true);
-        }));
-
         it('should save new instance', inject(function (MyLocalResource, $rootScope) {
             var response;
             var newObj = new MyLocalResource();

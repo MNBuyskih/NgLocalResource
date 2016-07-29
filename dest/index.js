@@ -1,99 +1,80 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var LocalResource;
-(function (LocalResource) {
-    var ServiceModelSuper = (function () {
-        function ServiceModelSuper($service, $config) {
-            this.$service = $service;
-            this.$config = $config;
+(function (LocalResource_1) {
+    var LocalResource = (function () {
+        function LocalResource(service) {
+            this.service = service;
         }
-        return ServiceModelSuper;
-    }());
-    var ServiceModel = (function (_super) {
-        __extends(ServiceModel, _super);
-        function ServiceModel($service, $config) {
-            _super.call(this, $service, $config);
-        }
-        ServiceModel.prototype.$save = function () {
+        LocalResource.prototype.$save = function () {
             var _this = this;
-            return this.$service
+            return this.service
                 .save(this)
                 .then(function (response) {
                 angular.extend(_this, response);
                 return _this;
             });
         };
-        ServiceModel.prototype.$update = function () {
+        LocalResource.prototype.$update = function () {
             var _this = this;
-            return this.$service
+            return this.service
                 .update(this)
                 .then(function (response) {
                 angular.extend(_this, response);
                 return _this;
             });
         };
-        ServiceModel.prototype.$remove = function () {
-            return this.$service.remove(this[this.$config.pk]);
+        LocalResource.prototype.$remove = function () {
+            return this.service.remove(this);
         };
-        return ServiceModel;
-    }(ServiceModelSuper));
-    LocalResource.ServiceModel = ServiceModel;
-    function createService(localStorage, $q) {
-        return function (config) {
-            // Todo: Ugly hard code.
-            // Hide property `config` under function instance.
-            var _config = function () {
-            };
-            _config.key = config.key;
-            _config.pk = config.pk;
-            config = _config;
+        LocalResource.prototype.$delete = function () {
+            return this.$remove();
+        };
+        return LocalResource;
+    }());
+    function createService($localStorage, $q) {
+        return function (key, pk) {
+            if (pk === void 0) { pk = 'id'; }
             var service;
             service = function () {
-                return new ServiceModel(service, config);
+                return new LocalResource(service);
             };
             service.save = function (model) {
-                if (model[config.pk] === undefined)
-                    model[config.pk] = _createPk();
-                _set(model[config.pk], model);
-                return this.get(model[config.pk]);
+                if (model[pk] === undefined)
+                    model[pk] = _createPk();
+                _set(model[pk], model);
+                return this.get(model[pk]);
             };
             service.update = function (model) {
-                _set(model[config.pk], model);
-                return this.get(model[config.pk]);
+                _set(model[pk], model);
+                return this.get(model[pk]);
             };
-            service.remove = function (id) {
-                return $q.resolve(localStorage.remove(_createKey(id)));
+            service.remove = function (model) {
+                return $q.resolve($localStorage.remove(_createKey(model[pk])));
             };
             service.get = function (id) {
                 return _get(id);
             };
             service.query = function () {
-                return $q.all(localStorage
+                return $q.all($localStorage
                     .keys()
-                    .filter(function (key) {
-                    return key.indexOf(config.key) > -1;
-                })
-                    .map(function (key) { return _get(key.replace(config.key, '')); }));
+                    .filter(function (key) { return key.indexOf(key) > -1; })
+                    .map(function (k) { return _get(k.replace(key, '')); }));
             };
-            return service;
-            function _get(id) {
-                return $q.resolve(localStorage.get(_createKey(id)));
-            }
             function _set(key, value) {
-                return localStorage.set(_createKey(key), value);
+                return $localStorage.set(_createKey(key), value);
             }
-            function _createKey(id) {
-                return "" + config.key + id;
+            function _get(id) {
+                return $q.resolve($localStorage.get(_createKey(id)));
             }
             function _createPk() {
-                return (localStorage.length() + 1).toString();
+                return ($localStorage.length() + 1).toString();
             }
+            function _createKey(id) {
+                return "" + key + id;
+            }
+            return service;
         };
     }
-    LocalResource.createService = createService;
+    LocalResource_1.createService = createService;
 })(LocalResource || (LocalResource = {}));
 angular
     .module('LocalResourceModule', ['LocalStorageModule'])
