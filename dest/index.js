@@ -56,7 +56,7 @@ var LocalResource;
             service.query = function () {
                 return $q.all($localStorage
                     .keys()
-                    .filter(function (key) { return key.indexOf(key) > -1; })
+                    .filter(function (k) { return k.indexOf(key) > -1; })
                     .map(function (k) { return _get(k.replace(key, '')); }));
             };
             function _set(key, value) {

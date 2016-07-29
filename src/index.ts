@@ -65,7 +65,7 @@ module LocalResource {
             service.query = function ():IPromise<T[]> {
                 return $q.all($localStorage
                     .keys()
-                    .filter((key) => key.indexOf(key) > -1)
+                    .filter((k) => k.indexOf(key) > -1)
                     .map((k) => _get(k.replace(key, ''))));
             };
 
