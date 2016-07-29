@@ -1,6 +1,6 @@
 {
   "name": "ng-local-resource",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Angular module for use local storage as remote resource",
   "main": "dest/index.js",
   "directories": {
